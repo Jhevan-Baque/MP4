@@ -176,6 +176,7 @@ auto startTime = steady_clock::now();
 if (duration_cast<seconds>(steady_clock::now() - startTime).count() > 30) {
     cout << "Time's up!";
 }
+```
 
 ### ⚙️ Thread Usage
 
