@@ -16,13 +16,11 @@ A C++ game inspired by *Who Wants to Be a Millionaire*. This game allows up to 3
 
 ---
 
-## 📖 Full Code Documentation
+## 📖 Documentation
 
 This section explains the core structure and logic of the source code in `millionaire.cpp`.
 
 ---
-
-### 🧱 Data Structures
 
 #### `struct Question`
 
@@ -36,15 +34,15 @@ struct Question {
 };
 ```
 
-- `text`: The actual question.
-- `options`: A map from character ('A', 'B', etc.) to answer string.
-- `correct`: The correct option key (e.g. `'B'`).
+- `text`: Handles the question.
+- `options`: Choices ('A', 'B', etc.) to answer string.
+- `correct`: The correct option key.
 
 ---
 
 #### `struct Player`
 
-Holds data related to each player in the game.
+Holds the data of each player in the game.
 
 ```cpp
 struct Player {
@@ -62,7 +60,7 @@ struct Player {
 - `id`: Player ID number.
 - `name`: Player's name.
 - `score`: Current score (increments by 10 per correct answer).
-- `active`: Whether the player chose to join the game.
+- `active`: Whether the player chose to join the game or not.
 - `lastAnswer`: Stores the last answer given by the player.
 - Lifeline flags:
   - `used5050`
@@ -71,16 +69,14 @@ struct Player {
 
 ---
 
-### 🧩 Core Functions
-
 #### `main()`
 
 The game entry point:
 - Initializes player data.
-- Uses `std::latch` to wait for all player names and decisions.
-- Starts rounds using `std::barrier` to sync players per question.
+- Uses `latch` to wait for all player names and decisions.
+- Starts each round using `barrier` to sync players per question.
 - Shuffles questions and runs 3 rounds.
-- Evaluates answers and declares the winner.
+- Checks answers and declares the winner.
 
 ---
 
@@ -134,7 +130,7 @@ void useAskAudience(const Question& q, Player& player);
 
 Handles timed input from the player:
 - Waits up to 30 seconds for input.
-- Accepts A/B/C/D or lifeline commands.
+- Accepts A/B/C/D or lifeline options.
 - Applies lifelines when called.
 - Stores final answer.
 
@@ -146,9 +142,8 @@ void answerQuestion(Player* player, const Question& q);
 
 #### `evaluateAnswers()`
 
-Evaluates all players' answers in parallel using `std::async`:
+Evaluates all players' answers in parallel using `async`:
 - Awards 10 points for correct answer.
-- Outputs correctness message per player.
 
 ```cpp
 void evaluateAnswers(const vector<Player*>& players, const Question& q);
@@ -158,31 +153,19 @@ void evaluateAnswers(const vector<Player*>& players, const Question& q);
 
 #### `declareWinner()`
 
-Determines and displays the winner(s) based on the highest score.
-Also maps scores to prize tiers:
+Displays the winner(s) based on the highest score.
+Also gives prizes based on their scores:
 
 | Score | Prize       |
 |-------|-------------|
-| 30    | 🥇 1,000,000 |
-| 20    | 🥈 500,000   |
-| 10    | 🥉 250,000   |
-|  0    | 😢 No prize  |
+| 30    |  1,000,000  |
+| 20    |   500,000   |
+| 10    |   250,000   |
+|  0    |   No prize  |
 
 ```cpp
 void declareWinner(const vector<Player*>& players);
 ```
-
----
-
-### ⚙️ Multithreading Details
-
-This game uses **C++20 concurrency primitives**:
-
-- `std::thread` — Creates separate threads for each player.
-- `std::mutex` — Ensures safe output and input handling across threads.
-- `std::latch` — Waits for all players to log in before starting.
-- `std::barrier` — Synchronizes players after each round before scoring.
-- `std::async` — Evaluates answers in parallel.
 
 ---
 
@@ -196,17 +179,3 @@ if (duration_cast<seconds>(steady_clock::now() - startTime).count() > 30) {
     cout << "Time's up!";
 }
 ```
-
----
-
-### 📝 Game Flow Summary
-
-1. Prompt players for names and consent to join.
-2. Once all players are ready, start the game.
-3. For each of 3 rounds:
-   - Ask a question to all players.
-   - Handle their input and lifeline use.
-   - Evaluate their answers.
-4. Display scores and determine the winner.
-
----
