@@ -236,11 +236,3 @@ int main() {
     return 0;
 }
 
-### ⚙️ Thread Usage
-
-- `std::thread` — Spawns threads for player input (name, join decision) and answering questions.
-- `std::mutex` — Guards shared resources like `cin`, `cout`, and the player list to avoid race conditions.
-- `std::latch` — Main thread waits until all login threads complete before starting the game.
-- `std::barrier` — Ensures all players finish answering before moving to evaluation.
-- `std::async` — Runs scoring for each player in parallel for faster evaluation.
-
