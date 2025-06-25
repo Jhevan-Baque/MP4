@@ -1,6 +1,6 @@
 # 🧠 Millionaire Quiz Game
 
-A multi-threaded C++ console game inspired by *Who Wants to Be a Millionaire*. This game allows up to 3 players to participate in a quiz show featuring multiple-choice questions, lifelines, and real-time interaction using C++20 concurrency features.
+A C++ game inspired by *Who Wants to Be a Millionaire*. This game allows up to 3 players to participate in a quiz show featuring multiple-choice questions, lifelines, and real-time interaction.
 
 ---
 
