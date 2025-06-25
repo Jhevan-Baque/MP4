@@ -16,9 +16,7 @@ A C++ game inspired by *Who Wants to Be a Millionaire*. This game allows up to 3
 
 ---
 
-## 📖 Documentation
-
-This section explains the core structure and logic of the source code in `millionaire.cpp`.
+## Documentation
 
 ---
 
@@ -169,7 +167,7 @@ void declareWinner(const vector<Player*>& players);
 
 ---
 
-### ⏱ Time Limit Logic
+### Time Limit Logic
 
 The player is only allowed 30 seconds to answer a question:
 
