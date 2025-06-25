@@ -13,16 +13,18 @@
 using namespace std;
 using namespace chrono;
 
-constexpr int NUM_ROUNDS = 3;
+constexpr int NUM_ROUNDS = 3; // holds how many rounds.
 mutex cout_mutex;
 mutex input_mutex;
 
+// Structure for each question, holds question text, options, and correct answer.
 struct Question {
     string text;
     map<char, string> options;
     char correct;
 };
 
+// Player structure
 struct Player {
     int id;
     string name;
@@ -34,6 +36,7 @@ struct Player {
     bool usedAsk = false;
 };
 
+// Questions list, holds all possible questions.
 vector<Question> questions = {
     {"What is the capital of France?", {{'A', "London"}, {'B', "Paris"}, {'C', "Berlin"}, {'D', "Madrid"}}, 'B'},
     {"Which is the Red Planet?", {{'A', "Venus"}, {'B', "Earth"}, {'C', "Mars"}, {'D', "Jupiter"}}, 'C'},
@@ -46,12 +49,14 @@ vector<Question> questions = {
     {"Which painter is known for cutting off part of his own ear?", {{'A', "Picasso"},{'B', "Van Gogh"},{'C', "Monet"},{'D', "Da Vinci"}},'B'}
 };
 
+// Just shows the answer options example after 50/50
 void showOptions(const map<char, string>& options, const vector<char>& hide = {}) {
     for (const auto& [key, text] : options)
         if (find(hide.begin(), hide.end(), key) == hide.end())
             cout << "[" << key << "] " << text << "\n";
 }
 
+// 50/50 lifeline – removes 2 wrong answers
 void use5050(const Question& q, Player& player, vector<char>& hiddenOptions) {
     if (player.used5050) {
         cout << "You already used 50/50.\n";
@@ -68,6 +73,7 @@ void use5050(const Question& q, Player& player, vector<char>& hiddenOptions) {
     cout << "[50/50] Two wrong options removed!\n";
 }
 
+// Call a friend lifeline – 80% chance they'll say the correct answer
 void useCallFriend(const Question& q, Player& player) {
     if (player.usedCall) {
         cout << "You already used Call a Friend.\n";
@@ -79,6 +85,7 @@ void useCallFriend(const Question& q, Player& player) {
     cout << "[Call a Friend] Your friend thinks the answer is: " << suggestion << "\n";
 }
 
+// Ask the audience – simulated poll that boosts the correct answer
 void useAskAudience(const Question& q, Player& player) {
     if (player.usedAsk) {
         cout << "You already used Ask the Audience.\n";
@@ -92,6 +99,7 @@ void useAskAudience(const Question& q, Player& player) {
         cout << "  " << opt << ": " << votes << "%\n";
 }
 
+// Handles player input during their turn
 void answerQuestion(Player* player, const Question& q) {
     char finalAnswer = ' ';
     vector<char> hiddenOptions;
@@ -127,6 +135,7 @@ void answerQuestion(Player* player, const Question& q) {
     player->lastAnswer = finalAnswer;
 }
 
+// After every round, check if answers are correct and update scores
 void evaluateAnswers(const vector<Player*>& players, const Question& q) {
     vector<future<void>> futures;
     for (Player* player : players) {
@@ -144,6 +153,7 @@ void evaluateAnswers(const vector<Player*>& players, const Question& q) {
     for (auto& f : futures) f.wait();
 }
 
+// Check who got the highest score and print result with prize
 void declareWinner(const vector<Player*>& players) {
     int highest = 0;
     for (const Player* p : players)
@@ -170,6 +180,7 @@ int main() {
     vector<bool> joined(maxPlayers, false);
     latch latch(maxPlayers);
 
+    // Wait for everyone to log in and ask if they wanna play
     for (int i = 0; i < maxPlayers; ++i) {
         players[i].id = i + 1;
         threads.emplace_back([&, i]() {
@@ -192,7 +203,7 @@ int main() {
             latch.count_down();
         });
     }
-    latch.wait();
+    latch.wait(); // wait for all threads to finish asking players
     for (auto& t : threads) t.join();
     if (activePlayers.empty()) {
         cout << "No players joined. Game canceled.\n";
@@ -200,7 +211,9 @@ int main() {
     }
     cout << "\nGame Starting with " << activePlayers.size() << " players...\n";
     barrier roundBarrier((int)activePlayers.size());
+    // Shuffle questions
     shuffle(questions.begin(), questions.end(), mt19937{ random_device{}() });
+    // Game rounds
     for (int round = 0; round < NUM_ROUNDS; ++round) {
         const Question& q = questions[round];
         cout << "\nRound " << (round + 1) << ": " << q.text << "\n";
@@ -209,7 +222,7 @@ int main() {
         for (Player* player : activePlayers) {
             roundThreads.emplace_back([&, player]() {
                 answerQuestion(player, q);
-                roundBarrier.arrive_and_wait();
+                roundBarrier.arrive_and_wait(); // make sure everyone finishes before we continue
             });
         }
         for (auto& t : roundThreads) t.join();
