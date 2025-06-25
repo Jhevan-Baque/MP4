@@ -1,18 +1,18 @@
-# 🧠 Millionaire Quiz Game
+# Millionaire Quiz Game
 
 A C++ game inspired by *Who Wants to Be a Millionaire*. This game allows up to 3 players to participate in a quiz show featuring multiple-choice questions, lifelines, and real-time interaction.
 
 ---
 
-## 🎮 Features
+## Features
 
-- 🧑‍🤝‍🧑 Supports up to **3 players**
-- ⏱️ **30-second timer** per question
-- 💡 Lifelines:
+- Supports up to **3 players**
+- **30-second timer** per question
+- Lifelines:
   - **50/50** – removes two wrong options
   - **Call a Friend** – simulated suggestion with 80% accuracy
   - **Ask the Audience** – fake audience poll
-- 🏆 Automatic **scoring and winner declaration**
+- Automatic **scoring and winner declaration**
 
 ---
 
@@ -178,7 +178,7 @@ if (duration_cast<seconds>(steady_clock::now() - startTime).count() > 30) {
 }
 ```
 
-### ⚙️ Thread Usage
+### Thread Usage
 
 - `std::thread` — Spawns threads for player input (name, join decision) and answering questions.
 - `std::mutex` — Guards shared resources like `cin`, `cout`, and the player list to avoid race conditions.
