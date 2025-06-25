@@ -185,4 +185,3 @@ if (duration_cast<seconds>(steady_clock::now() - startTime).count() > 30) {
 - `std::latch` — Main thread waits until all login threads complete before starting the game.
 - `std::barrier` — Ensures all players finish answering before moving to evaluation.
 - `std::async` — Runs scoring for each player in parallel for faster evaluation.
-```
